@@ -4,7 +4,8 @@ author: "Ishwara Hegde"
 date: "7/15/2020"
 output: html_document
 ---
-For my first Tidy Tuesday I wish to analyze how the proportion of astronauts have varied over time. I mainly focus on the USA and U.S.S.R/ Russia. This is because I want to keep things simple and use only three factors levels.  
+For my first Tidy Tuesday I wish to analyze how the proportion of astronauts have varied over time. 
+I mainly focus on the USA and U.S.S.R/ Russia. This is because I want to keep things simple and use only three factors levels.  
 ```{r setup, include=FALSE}
 #Installing necessary packages
 
