@@ -1,0 +1,86 @@
+---
+title: "tidy_tuesday_1"
+author: "Ishwara Hegde"
+date: "7/15/2020"
+output: html_document
+---
+For my first Tidy Tuesday I wish to analyze how the proportion of astronauts have varied over time. 
+I mainly focus on the USA and U.S.S.R/ Russia. This is because I want to keep things simple and use only three factors levels.  
+```{r setup, include=FALSE}
+#Installing necessary packages
+
+#Uncomment the next line if you do not have bbplot
+#devtools::install_github('bbc/bbplot')
+knitr::opts_chunk$set(echo = TRUE)
+# Setting My working directory. please change as required
+#setwd("C:\\Users\\user\\OneDrive - City University of Hong Kong\\University\\Cemfi")
+if(!require(pacman))install.packages("pacman")
+
+pacman::p_load('dplyr', 'tidyr', 'gapminder',
+               'ggplot2',  'ggalt',
+               'forcats', 'R.utils', 'png', 
+               'grid', 'ggpubr', 'scales',
+               'bbplot', 'knitr', 'janitor', 'tidyverse')
+
+
+#Loading the required data
+astronauts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
+
+
+```
+I will use the cleaning script already provided. In the future, I will hopefully be able to clearn the data myself.
+```{r, data cleaning}
+astronauts <-astronauts %>% 
+  clean_names() %>% 
+  filter(!is.na(number)) %>%  # remove last row (all values are NA)
+  mutate(
+    sex = if_else(sex == "M", "male", "female"),
+    military_civilian = if_else(military_civilian == "Mil", "military", "civilian")
+  )
+```
+
+The main goal for my analysis is to describe graphically the nationalities of astronauts over time. 
+
+```{r, data analysis}
+# I will find the number of unique nationalities below 
+nations<-unique(astronauts$nationality)
+nations
+
+# There are 40 unique nations. Below I will convert nationalities to factors 
+astronauts<-astronauts %>% mutate(fct_nations=factor(nationality,levels=nations))
+# I will create a grouped data set of astronauts by nationality and year of mission
+data1<-astronauts %>% group_by(nationality,year_of_mission) %>% summarise(n=n()) %>%arrange(year_of_mission)
+
+```
+For plotting I use the BBC Journalism team's tutorials.
+```{r, Plot}
+# I want to plot by year the nationalities 
+
+stacked_bars <- ggplot(data = data1, 
+                       aes(x = year_of_mission,
+                           y = n,
+                           fill = fct_lump(nationality,n=2))) +
+  geom_bar(stat = "identity", 
+           position = "fill") +
+  bbc_style() +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_viridis_d(direction = -1) +
+  geom_hline(yintercept = 0, size = 1, colour = "#333333") +
+  labs(title = "Nationalities of Astronauts") +
+  theme(legend.position = "top", 
+        legend.justification = "left") +
+  guides(fill = guide_legend(reverse = TRUE))
+
+# Exporting the graph
+ggsave(
+  "stacked_bars.png",
+  plot = last_plot(),
+  device = "png",
+  scale = 1,
+  width = NA,
+  height = NA,
+  units = c("in", "cm", "mm"),
+  dpi = 300)
+
+
+```
