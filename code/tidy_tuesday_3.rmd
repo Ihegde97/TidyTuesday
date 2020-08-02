@@ -40,11 +40,12 @@ mutate(species=factor(species,levels=unique(.$species),labels = c("Adelie Pengui
 This week I would like to create ridge plots for visualizing distributions
 
 ```{r Ridgeplot basics, warning=FALSE}
-penguins_raw %>% ggplot(mapping = aes(x=body_mass_g,y=species,fill=species))+
+penguins_raw %>% ggplot(mapping = aes(x=body_mass_g,y=species,fill=species,color=species))+
         geom_density_ridges(aes(point_color=species,point_fill=species,
                         point_shape=species),jittered_points=TRUE,alpha=0.2,
                         point_alpha=1)->p
 ```
+
 ```{r polishing the graph}
 #Adding some finishing touches 
 p+
@@ -57,10 +58,10 @@ scale_point_color_hue(l = 40) + scale_point_size_continuous(range = c(0.5, 4)) +
               panel.grid.minor = element_blank(),
               legend.position = "none",
               text = element_text(family = "Georgia"),
-              axis.text.y = element_text(size = 8),
-              plot.title = element_text(size = 20, margin = margin(b = 10), hjust = 0),
-              plot.subtitle = element_text(size = 12, color = "darkslategrey", margin = margin(b = 25, l = -25)),
-              plot.caption = element_text(size = 8, margin = margin(t = 10), color = "grey70", hjust = 0))
+              axis.text= element_text(size = 12), 
+              plot.title = element_text(size = 24, margin = margin(b = 10), hjust = 0),
+              plot.subtitle = element_text(size = 14, color = "darkslategrey", margin = margin(b = 25, l = -25)),
+              plot.caption = element_text(size = 14, margin = margin(t = 10), color = "grey70", hjust = 0))
 
 #Saving the plot
 ggsave("penguins_ridges.png",path="C:/Users/user/OneDrive - City University of Hong Kong/University/Cemfi/TidyTuesday/Output", height = 19.05, width=33.86, units = "cm", dpi=300)
