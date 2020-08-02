@@ -28,7 +28,7 @@ penguins_raw.csv <- readr::read_csv('https://raw.githubusercontent.com/rfordatas
 ```{r cleaning script}
 #The goal is to make the raw data look like the cleaned data 
 penguins_raw<-penguins_raw.csv %>% select(Sex,`Body Mass (g)`,Species,Island,`Culmen Depth (mm)`,`Culmen Length (mm)`,`Flipper Length (mm)`,`Date Egg`) %>% 
-        rename(sex=Sex,body_mass_g=`Body Mass (g)`, species=Species,
+        rename(sex=Sex,species=Species,
                bill_length_mm=`Culmen Length (mm)`, bill_depth_mm=`Culmen Length (mm)`,
                flipper_length_mm= `Flipper Length (mm)`) %>%
         mutate(year=year(`Date Egg`)) %>% select(-`Date Egg`) %>% 
@@ -40,7 +40,7 @@ mutate(species=factor(species,levels=unique(.$species),labels = c("Adelie Pengui
 This week I would like to create ridge plots for visualizing distributions
 
 ```{r Ridgeplot basics, warning=FALSE}
-penguins_raw %>% ggplot(mapping = aes(x=body_mass_g,y=species,fill=species,color=species))+
+penguins_raw %>% ggplot(mapping = aes(x=`Body Mass (g)`,y=species,fill=species,color=species))+
         geom_density_ridges(aes(point_color=species,point_fill=species,
                         point_shape=species),jittered_points=TRUE,alpha=0.2,
                         point_alpha=1)->p
@@ -54,11 +54,10 @@ scale_point_color_hue(l = 40) + scale_point_size_continuous(range = c(0.5, 4)) +
              subtitle = "Distribution of body mass in grams of penguins from 2007-2009",
              caption = "Source: Palmer Penguins") +
         theme_minimal() +
-        theme(axis.title = element_blank(),
-              panel.grid.minor = element_blank(),
-              legend.position = "none",
+        theme(panel.grid.minor = element_blank(),
+              legend.position = "none",axis.title.y = element_blank(),
               text = element_text(family = "Georgia"),
-              axis.text= element_text(size = 12), 
+              axis.text= element_text(size = 12,color = "darkslategrey"), axis.title = element_text(color="darkslategrey"),
               plot.title = element_text(size = 24, margin = margin(b = 10), hjust = 0),
               plot.subtitle = element_text(size = 14, color = "darkslategrey", margin = margin(b = 25, l = -25)),
               plot.caption = element_text(size = 14, margin = margin(t = 10), color = "grey70", hjust = 0))
