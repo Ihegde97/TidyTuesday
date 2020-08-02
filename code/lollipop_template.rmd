@@ -1,0 +1,59 @@
+---
+title: "Lollipop template"
+author: "Ishwara Hegde"
+date: "7/31/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)          # for data manipulation
+library(tidyr)          # for data tidying
+library(ggplot2)     
+library(extrafont)
+loadfonts(device = "win", quiet = TRUE)
+```
+
+
+```{r cars}
+#Uses the midwest dataset included in ggplot
+ohio_top25<-midwest %>% filter(state=="OH") %>% select(county,percollege) %>% 
+        slice_max(order_by = percollege,n=25)%>% arrange(percollege) %>% mutate(county=factor(county,levels=.$county))
+#lollipop graph
+ggplot(data=ohio_top25,mapping=aes(percollege,county))+
+        geom_segment(aes(x=0,y=county,xend=percollege,yend=county))+
+        geom_point()+labs(title = "College Educated Adults in Ohio Counties",
+             subtitle = "Enter subtitle here.",
+             caption = "U.S. Census Bureau: 2000 Census") +
+        theme_minimal() +
+        theme(axis.title = element_blank(),
+              panel.grid.minor = element_blank(),
+              legend.position = "none",
+              text = element_text(family = "Georgia"),
+              axis.text.y = element_text(size = 8),
+              plot.title = element_text(size = 20, margin = margin(b = 10), hjust = 0),
+              plot.subtitle = element_text(size = 12, color = "darkslategrey", margin = margin(b = 25, l = -25)),
+              plot.caption = element_text(size = 8, margin = margin(t = 10), color = "grey70", hjust = 0))
+#Checking if the county is above or below avg
+ohio <- midwest %>%
+        filter(state == "OH") %>%
+        select(county, percollege) %>%
+        arrange(percollege) %>%
+        mutate(Avg = mean(percollege, na.rm = TRUE),
+               Above = ifelse(percollege - Avg > 0, TRUE, FALSE),
+               county = factor(county, levels = .$county))
+#Incorporating this into our graph
+ggplot(data=ohio,mapping=aes(percollege,county))+
+        geom_segment(aes(x=0,y=county,xend=percollege,yend=county,color=Above))+
+        geom_point()
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

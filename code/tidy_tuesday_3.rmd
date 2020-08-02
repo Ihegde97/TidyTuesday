@@ -1,0 +1,70 @@
+---
+title: "Tidy Tuesday -- Submission 3"
+author: "Ishwara Hegde"
+date: "7/28/2020"
+output: html_document
+---
+```{r setup, include=FALSE,warning=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+#Loading all the necessary packages
+if(!require(pacman))install.packages("pacman")
+
+pacman::p_load('dplyr', 'tidyr', 'gapminder',
+               'ggplot2',  'ggalt',
+               'forcats', 'R.utils', 'png', 
+               'grid', 'scales',
+               'bbplot','waffle','ggridges','lubridate','extrafont')
+loadfonts(device = "win", quiet = TRUE)
+
+```
+
+```{r loadind the data, warning=FALSE}
+penguins.csv <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-28/penguins.csv')
+
+penguins_raw.csv <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-28/penguins_raw.csv')
+
+```
+
+```{r cleaning script}
+#The goal is to make the raw data look like the cleaned data 
+penguins_raw<-penguins_raw.csv %>% select(Sex,`Body Mass (g)`,Species,Island,`Culmen Depth (mm)`,`Culmen Length (mm)`,`Flipper Length (mm)`,`Date Egg`) %>% 
+        rename(sex=Sex,body_mass_g=`Body Mass (g)`, species=Species,
+               bill_length_mm=`Culmen Length (mm)`, bill_depth_mm=`Culmen Length (mm)`,
+               flipper_length_mm= `Flipper Length (mm)`) %>%
+        mutate(year=year(`Date Egg`)) %>% select(-`Date Egg`) %>% 
+mutate(species=factor(species,levels=unique(.$species),labels = c("Adelie Penguin", "Gentoo penguin","Chinstrap penguin")))
+
+        
+```
+
+This week I would like to create ridge plots for visualizing distributions
+
+```{r Ridgeplot basics, warning=FALSE}
+penguins_raw %>% ggplot(mapping = aes(x=body_mass_g,y=species,fill=species))+
+        geom_density_ridges(aes(point_color=species,point_fill=species,
+                        point_shape=species),jittered_points=TRUE,alpha=0.2,
+                        point_alpha=1)->p
+```
+```{r polishing the graph}
+#Adding some finishing touches 
+p+
+scale_point_color_hue(l = 40) + scale_point_size_continuous(range = c(0.5, 4)) +
+ labs(title = "Body Mass Distribtuion of Penguins",
+             subtitle = "Distribution of body mass in grams of penguins from 2007-2009",
+             caption = "Source: Palmer Penguins") +
+        theme_minimal() +
+        theme(axis.title = element_blank(),
+              panel.grid.minor = element_blank(),
+              legend.position = "none",
+              text = element_text(family = "Georgia"),
+              axis.text.y = element_text(size = 8),
+              plot.title = element_text(size = 20, margin = margin(b = 10), hjust = 0),
+              plot.subtitle = element_text(size = 12, color = "darkslategrey", margin = margin(b = 25, l = -25)),
+              plot.caption = element_text(size = 8, margin = margin(t = 10), color = "grey70", hjust = 0))
+
+#Saving the plot
+ggsave("penguins_ridges.png",path="C:/Users/user/OneDrive - City University of Hong Kong/University/Cemfi/TidyTuesday/Output", height = 19.05, width=33.86, units = "cm", dpi=300)
+```
+```
+
+```
